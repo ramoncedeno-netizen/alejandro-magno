@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Alejandro Magno</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Calm Harmony (Beige/Off-white, White, Deep Teal) -->
+    <!-- Application Structure Plan: A single-page application with JavaScript-driven tabbed navigation. Added a new section "Oráculo AI" powered by Gemini. 
+         - "Habla con Alejandro": Implements a chat interface where the system prompt instructs the LLM to act as Alexander based on Lane Fox's book.
+         - "Examinador Real": A feature to generate quiz questions on demand.
+    -->
+    <!-- Visualization & Content Choices: Existing sections remain text/card based. The new AI section uses a chat UI pattern and a card-based question display for the quiz. Markdown parsing is simulated for bold text to keep it dependency-free. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcf9;
+        }
+        .nav-btn {
+            @apply px-4 py-2 rounded-lg text-sm font-medium text-gray-700 transition-all duration-200;
+        }
+        .nav-btn.active {
+            @apply bg-teal-600 text-white shadow-md;
+        }
+        .nav-btn:not(.active):hover {
+            @apply bg-gray-100;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            @apply bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02];
+        }
+        .card-title {
+            @apply text-lg font-bold text-teal-800 flex items-center;
+        }
+        .card-icon {
+            @apply mr-3 text-2xl;
+        }
+        .timeline-step {
+            @apply flex-1 p-3 text-center text-sm font-medium text-gray-600 bg-white border-t-4 border-b-4 border-white cursor-pointer transition-all duration-200;
+        }
+        .timeline-step.active {
+            @apply text-teal-700 border-b-4 border-teal-600 font-bold;
+        }
+        .timeline-step:not(:last-child) {
+            border-right: 1px solid #e5e7eb;
+        }
+        .timeline-step:hover:not(.active) {
+            @apply bg-gray-50;
+        }
+        /* Chat Styles */
+        .chat-bubble {
+            @apply p-3 rounded-lg mb-3 max-w-[85%] text-sm leading-relaxed shadow-sm;
+        }
+        .user-bubble {
+            @apply bg-teal-100 text-teal-900 ml-auto rounded-br-none;
+        }
+        .ai-bubble {
+            @apply bg-white text-gray-800 mr-auto rounded-bl-none border border-gray-200;
+        }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+            @apply h-2 w-2 bg-gray-400 rounded-full inline-block mx-0.5;
+        }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto max-w-5xl p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-900">Guía Interactiva: Alejandro Magno</h1>
+            <p class="text-lg text-gray-600 mt-1">Basado en el libro de Robin Lane Fox</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+            <button class="nav-btn active" data-target="inicio">Inicio</button>
+            <button class="nav-btn" data-target="personajes">Personajes</button>
+            <button class="nav-btn" data-target="batallas">Batallas</button>
+            <button class="nav-btn" data-target="conceptos">Conceptos</button>
+            <button class="nav-btn" data-target="final">El Final</button>
+            <button class="nav-btn border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100" data-target="oraculo">Oráculo AI ✨</button>
+        </nav>
+
+        <main id="main-content" class="bg-white rounded-lg shadow-xl p-6 md:p-10 min-h-[400px]">
+            
+            <!-- SECCIÓN INICIO -->
+            <section id="inicio" class="content-section active space-y-6">
+                <h2 class="text-2xl font-bold text-teal-800 border-b-2 border-teal-100 pb-2">Tesis Principal del Autor</h2>
+                <p class="text-lg leading-relaxed">
+                    Robin Lane Fox presenta a Alejandro no solo como un conquistador militar, sino como un <strong class="font-semibold text-teal-700">visionario homérico</strong> impulsado por la <strong class="font-semibold text-teal-700"><i>Pothos</i></strong> (un anhelo insaciable de lo desconocido) y una creencia genuina y profunda en su propia divinidad como hijo de Zeus-Amón.
+                </p>
+                <blockquote class="border-l-4 border-teal-500 pl-4 italic text-gray-700 text-lg">
+                    "Alejandro nació para la guerra y murió por la paz."
+                    <span class="block text-sm text-gray-500 mt-2">— Tesis de Lane Fox sobre la necesidad de un mandato absoluto para unificar el imperio.</span>
+                </blockquote>
+                <div class="bg-blue-50 p-4 rounded-md border border-blue-100 mt-4">
+                    <h3 class="font-bold text-blue-800 mb-2">💡 Nuevo: Oráculo AI</h3>
+                    <p class="text-sm text-blue-700">Usa la nueva pestaña "Oráculo AI" para chatear con una simulación de Alejandro o generar preguntas de examen automáticamente.</p>
+                </div>
+            </section>
+
+            <!-- SECCIÓN PERSONAJES -->
+            <section id="personajes" class="content-section">
+                <h2 class="text-2xl font-bold text-teal-800 border-b-2 border-teal-100 pb-2 mb-6">Personajes Clave</h2>
+                <p class="text-gray-600 mb-6">Haz clic en cada personaje para revelar su descripción y su papel en la historia según Lane Fox.</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div id="personajes-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4"></div>
+                    <div id="personaje-detalle" class="bg-amber-50 rounded-lg p-6 min-h-[200px] flex items-center justify-center">
+                        <p class="text-gray-500 italic">Selecciona un personaje</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN BATALLAS -->
+            <section id="batallas" class="content-section">
+                <h2 class="text-2xl font-bold text-teal-800 border-b-2 border-teal-100 pb-2 mb-6">Las 4 Grandes Batallas</h2>
+                <p class="text-gray-600 mb-6">Explora cronológicamente las victorias que forjaron el imperio. Haz clic en cada batalla para ver los detalles clave.</p>
+                <div class="flex rounded-lg shadow-sm border border-gray-200 overflow-hidden" id="batallas-timeline">
+                </div>
+                <div id="batalla-detalle" class="bg-amber-50 rounded-lg p-6 mt-6 min-h-[150px] flex items-center">
+                    <p class="text-gray-500 italic">Selecciona una batalla de la línea de tiempo</p>
+                </div>
+            </section>
+
+            <!-- SECCIÓN CONCEPTOS -->
+            <section id="conceptos" class="content-section">
+                <h2 class="text-2xl font-bold text-teal-800 border-b-2 border-teal-100 pb-2 mb-6">Eventos y Conceptos Clave</h2>
+                <p class="text-gray-600 mb-6">Estos son los momentos y políticas definitorios del reinado de Alejandro. Haz clic en cada uno para entender su importancia.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div id="conceptos-grid" class="space-y-4"></div>
+                    <div id="concepto-detalle" class="bg-amber-50 rounded-lg p-6 min-h-[200px] flex items-center justify-center">
+                        <p class="text-gray-500 italic">Selecciona un concepto</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN EL FINAL -->
+            <section id="final" class="content-section">
+                <h2 class="text-2xl font-bold text-teal-800 border-b-2 border-teal-100 pb-2 mb-6">El Final</h2>
+                <ul class="space-y-4 list-disc list-inside text-lg">
+                    <li><strong class="font-semibold text-teal-700">Muerte de Hefestión:</strong> Causa el colapso emocional total de Alejandro. Entra en una profunda depresión y paranoia, marcando el principio del fin.</li>
+                    <li><strong class="font-semibold text-teal-700">Muerte de Alejandro (323 a.C.):</strong> Muere en Babilonia a los 32 años, tras días de fiebre intensa, sin nombrar un heredero claro.</li>
+                    <li><strong class="font-semibold text-teal-700">Sucesión:</strong> Al ser preguntado, susurra la palabra *"Kratistos"* ("Al más fuerte"). Esto desencadena 40 años de guerra civil.</li>
+                </ul>
+            </section>
+
+            <!-- NUEVA SECCIÓN: ORÁCULO AI -->
+            <section id="oraculo" class="content-section">
+                <div class="grid lg:grid-cols-2 gap-8 h-full">
+                    
+                    <!-- Chatbot -->
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 flex flex-col h-[500px]">
+                        <div class="mb-3 pb-3 border-b border-gray-200">
+                            <h3 class="text-xl font-bold text-teal-800 flex items-center">
+                                <span class="text-2xl mr-2">👑</span> Habla con Alejandro
+                            </h3>
+                            <p class="text-xs text-gray-500">Basado en la personalidad descrita por Robin Lane Fox.</p>
+                        </div>
+                        
+                        <div id="chat-history" class="flex-1 overflow-y-auto mb-4 p-2 space-y-2">
+                            <div class="chat-bubble ai-bubble">
+                                Soy Alejandro, hijo de Filipo... aunque mi verdadero padre mora en el Olimpo. ¿Qué deseas preguntar sobre mis conquistas?
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <input type="text" id="chat-input" placeholder="Pregunta sobre Gaugamela, Hefestión..." class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-teal-500 text-sm">
+                            <button id="send-chat-btn" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                                ➤
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Generator -->
+                    <div class="flex flex-col h-full">
+                        <div class="bg-amber-50 rounded-xl border border-amber-100 p-6 flex-1">
+                            <h3 class="text-xl font-bold text-amber-800 mb-2 flex items-center">
+                                <span class="text-2xl mr-2">📜</span> Examinador Real ✨
+                            </h3>
+                            <p class="text-sm text-gray-700 mb-6">Genera una pregunta de práctica aleatoria basada estrictamente en el libro para probar tu memoria antes del examen.</p>
+                            
+                            <div class="flex gap-3 mb-6">
+                                <button onclick="generateQuiz('batallas')" class="flex-1 py-2 px-3 bg-white border border-amber-300 text-amber-800 rounded hover:bg-amber-100 text-sm font-medium transition">Sobre Batallas</button>
+                                <button onclick="generateQuiz('general')" class="flex-1 py-2 px-3 bg-teal-600 text-white rounded hover:bg-teal-700 text-sm font-medium shadow-sm transition">Sorpréndeme ✨</button>
+                            </div>
+
+                            <!-- Quiz Output Area -->
+                            <div id="quiz-container" class="hidden">
+                                <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+                                    <div id="quiz-loading" class="hidden text-center py-4">
+                                        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                                        <p class="text-xs text-gray-400 mt-2">Consultando los rollos de papiro...</p>
+                                    </div>
+                                    <div id="quiz-content">
+                                        <!-- Question will appear here -->
+                                    </div>
+                                    <div id="quiz-answer" class="hidden mt-4 pt-4 border-t border-dashed border-gray-300">
+                                        <!-- Answer will appear here -->
+                                    </div>
+                                    <button id="reveal-answer-btn" class="hidden mt-4 text-xs text-teal-600 font-bold hover:underline w-full text-center">VER RESPUESTA</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Configuración Gemini API
+        const apiKey = ""; // System provides key at runtime
+        
+        // Base de datos local (existente)
+        const db = {
+            personajes: [
+                { id: 'filipo', nombre: 'Filipo II', icon: '👑', desc: 'Padre de Alejandro. Creador de la falange macedonia. Un líder pragmático, rudo y genio militar. Alejandro hereda su ejército, pero choca con su figura.' },
+                { id: 'olimpia', nombre: 'Olimpia', icon: '🐍', desc: 'Madre de Alejandro. Mística, vengativa y ferozmente protectora. Fuente de la creencia de Alejandro en su ascendencia divina (hijo de Zeus).' },
+                { id: 'dario', nombre: 'Darío III', icon: '🏃‍♂️', desc: 'Rey de Persia y principal antagonista. Lane Fox lo retrata como un líder competente, pero no a la altura de Alejandro. Huye en Issos y Gaugamela.' },
+                { id: 'hefestion', nombre: 'Hefestión', icon: '❤️', desc: 'El "Patroclo" de Alejandro. Su mejor amigo, segundo al mando y, según Lane Fox, el amor de su vida. Su muerte devasta a Alejandro.' },
+                { id: 'clito', nombre: 'Clito el Negro', icon: '🛡️', desc: 'Salvador de Alejandro en Gránico. Representa a la "vieja guardia". Es asesinado por un Alejandro borracho y furioso.' },
+                { id: 'parmenion', nombre: 'Parmenión', icon: '👴', desc: 'El viejo general de confianza de Filipo. Alejandro lo manda asesinar bajo sospecha de traición (ligada a su hijo Filotas).' }
+            ],
+            batallas: [
+                { id: 'granico', nombre: '1. Gránico', oponente: 'Sátrapas Persas', detalle: 'Primera victoria en Asia. Casi muere, pero Clito el Negro lo salva. Liderazgo temerario.' },
+                { id: 'issos', nombre: '2. Issos', oponente: 'Darío III', detalle: 'Darío huye y abandona a su familia. Alejandro los captura y los trata con honor (política).' },
+                { id: 'gaugamela', nombre: '3. Gaugamela', oponente: 'Darío III', detalle: 'Batalla decisiva. Táctica oblicua. Caída del Imperio Persa. Darío huye de nuevo.' },
+                { id: 'hidaspes', nombre: '4. Hidaspes', oponente: 'Rey Poros', detalle: 'Contra elefantes. Muerte de Bucéfalo. Última gran victoria antes del motín.' }
+            ],
+            conceptos: [
+                { id: 'nudo', nombre: 'El Nudo Gordiano', icon: '🔗', desc: 'Alejandro corta el nudo con su espada. Simboliza soluciones rápidas y pensamiento lateral.' },
+                { id: 'siwa', nombre: 'Oráculo de Siwa', icon: '🏛️', desc: 'El sacerdote lo saluda como "Hijo de Amón". Lane Fox dice que Alejandro se lo creyó genuinamente.' },
+                { id: 'proskynesis', nombre: 'La Proskynesis', icon: '🙇', desc: 'Intento de imponer el arrodillamiento persa. Los macedonios lo rechazan como ofensa a su libertad.' },
+                { id: 'bodas', nombre: 'Bodas de Susa', icon: '💍', desc: 'Matrimonio masivo de 10,000 soldados con mujeres persas. Política de Fusión de culturas.' },
+                { id: 'motin', nombre: 'Motín del Hífasis', icon: '🚫', desc: 'Las tropas se niegan a seguir en la India. El límite geográfico de la conquista.' }
+            ]
+        };
+
+        // --- LOGICA GENERAL UI ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Navigation Logic
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    if(!button.textContent.includes('AI')) button.classList.add('active'); 
+                    
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            // Populate Personajes
+            const personajesGrid = document.getElementById('personajes-grid');
+            const personajeDetalle = document.getElementById('personaje-detalle');
+            db.personajes.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h3 class="card-title"><span class="card-icon">${p.icon}</span> ${p.nombre}</h3>`;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('#personajes-grid .card').forEach(c => c.classList.remove('bg-teal-50', 'border', 'border-teal-300'));
+                    card.classList.add('bg-teal-50', 'border', 'border-teal-300');
+                    personajeDetalle.innerHTML = `<h4 class="text-xl font-bold text-teal-800 mb-2">${p.nombre}</h4><p class="text-gray-700">${p.desc}</p>`;
+                });
+                personajesGrid.appendChild(card);
+            });
+
+            // Populate Batallas
+            const batallasTimeline = document.getElementById('batallas-timeline');
+            const batallaDetalle = document.getElementById('batalla-detalle');
+            db.batallas.forEach(b => {
+                const step = document.createElement('div');
+                step.className = 'timeline-step';
+                step.textContent = b.nombre;
+                step.addEventListener('click', () => {
+                    document.querySelectorAll('#batallas-timeline .timeline-step').forEach(s => s.classList.remove('active'));
+                    step.classList.add('active');
+                    batallaDetalle.innerHTML = `<div class="w-full"><h4 class="text-xl font-bold text-teal-800 mb-3">${b.nombre.substring(3)}</h4><p class="text-gray-700 mb-1"><strong class="font-semibold">Oponente:</strong> ${b.oponente}</p><p class="text-gray-700"><strong class="font-semibold">Detalle Clave:</strong> ${b.detalle}</p></div>`;
+                });
+                batallasTimeline.appendChild(step);
+            });
+
+            // Populate Conceptos
+            const conceptosGrid = document.getElementById('conceptos-grid');
+            const conceptoDetalle = document.getElementById('concepto-detalle');
+            db.conceptos.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h3 class="card-title"><span class="card-icon">${c.icon}</span> ${c.nombre}</h3>`;
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('#conceptos-grid .card').forEach(c => c.classList.remove('bg-teal-50', 'border', 'border-teal-300'));
+                    card.classList.add('bg-teal-50', 'border', 'border-teal-300');
+                    conceptoDetalle.innerHTML = `<h4 class="text-xl font-bold text-teal-800 mb-2">${c.nombre}</h4><p class="text-gray-700">${c.desc}</p>`;
+                });
+                conceptosGrid.appendChild(card);
+            });
+            
+            // Chat Event Listeners
+            document.getElementById('send-chat-btn').addEventListener('click', handleChat);
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleChat();
+            });
+        });
+
+        // --- LOGICA GEMINI API ---
+
+        async function callGeminiAPI(prompt) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) throw new Error('Error en la API');
+                
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error(error);
+                return "Lo siento, los dioses guardan silencio (Error de conexión).";
+            }
+        }
+
+        // --- CHATBOT ---
+        async function handleChat() {
+            const input = document.getElementById('chat-input');
+            const history = document.getElementById('chat-history');
+            const userText = input.value.trim();
+            if (!userText) return;
+
+            // User UI
+            history.innerHTML += `<div class="chat-bubble user-bubble">${userText}</div>`;
+            input.value = '';
+            history.scrollTop = history.scrollHeight;
+
+            // Loading UI
+            const loadingId = 'loading-' + Date.now();
+            history.innerHTML += `<div id="${loadingId}" class="chat-bubble ai-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+            history.scrollTop = history.scrollHeight;
+
+            // System Prompt for Persona
+            const systemPrompt = `Actúa como Alejandro Magno. 
+            Contexto: Estás basado estrictamente en la biografía de Robin Lane Fox.
+            Personalidad: Brillante, estratégico, pero arrogante y obsesionado con tu divinidad (Hijo de Amón).
+            Tono: Noble, intenso, ligeramente arcaico pero comprensible.
+            Situación: Estás respondiendo a un estudiante que estudia tu vida.
+            Si te preguntan por Hefestión, muestra dolor. Si te preguntan por Filipo, muestra respeto pero distancia.
+            Usuario dice: "${userText}"`;
+
+            const reply = await callGeminiAPI(systemPrompt);
+            
+            document.getElementById(loadingId).remove();
+            const cleanReply = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Simple markdown bold parser
+            history.innerHTML += `<div class="chat-bubble ai-bubble">${cleanReply}</div>`;
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // --- QUIZ GENERATOR ---
+        async function generateQuiz(type) {
+            const container = document.getElementById('quiz-container');
+            const content = document.getElementById('quiz-content');
+            const loading = document.getElementById('quiz-loading');
+            const answerDiv = document.getElementById('quiz-answer');
+            const btn = document.getElementById('reveal-answer-btn');
+
+            container.classList.remove('hidden');
+            content.innerHTML = '';
+            answerDiv.classList.add('hidden');
+            btn.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            let promptTopic = type === 'batallas' ? 'sobre las tácticas militares o batallas' : 'sobre un detalle importante (político o personal)';
+            const prompt = `Genera UNA pregunta de opción múltiple para un examen sobre el libro "Alejandro Magno" de Robin Lane Fox.
+            Tema: ${promptTopic}.
+            Formato de respuesta OBLIGATORIO:
+            PREGUNTA: [Texto de la pregunta]
+            A) [Opción A]
+            B) [Opción B]
+            C) [Opción C]
+            RESPUESTA: [Letra correcta]
+            EXPLICACIÓN: [Breve explicación de por qué según Lane Fox]`;
+
+            const text = await callGeminiAPI(prompt);
+            loading.classList.add('hidden');
+
+            // Simple text parsing
+            const parts = text.split('RESPUESTA:');
+            const questionPart = parts[0].replace(/\n/g, '<br>');
+            const answerPart = parts[1] ? parts[1].trim() : "Ver explicación.";
+
+            content.innerHTML = `<div class="font-medium text-gray-800">${questionPart}</div>`;
+            answerDiv.innerHTML = `<p class="font-bold text-teal-700">Respuesta Correcta: ${answerPart.split('EXPLICACIÓN:')[0]}</p>
+                                   <p class="text-sm text-gray-600 mt-2"><em>${answerPart.split('EXPLICACIÓN:')[1] || ''}</em></p>`;
+            
+            btn.classList.remove('hidden');
+            btn.onclick = () => {
+                answerDiv.classList.remove('hidden');
+                btn.classList.add('hidden');
+            };
+        }
+    </script>
+</body>
+</html>
